@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Impress Your Crush — Interactive Animation</title>
+    <style>
+        :root {
+            --bg1: #ff9a9e;
+            --bg2: #fad0c4;
+            --accent: #ff3b6b;
+            --muted: #ffffffcc;
+            --glass: rgba(255, 255, 255, 0.12);
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, var(--bg1), transparent 20%),
+                radial-gradient(circle at 90% 90%, var(--bg2), transparent 20%),
+                linear-gradient(135deg, #fbe9f0 0%, #fffefe 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+        }
+
+        /* floating hearts background */
+        .hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0
+        }
+
+        .heart {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            opacity: .9;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+            animation: floatUp linear infinite;
+        }
+
+        .heart svg {
+            width: 100%;
+            height: 100%;
+            display: block
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8) rotate(-20deg);
+                opacity: 0
+            }
+
+            10% {
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(-120vh) scale(1.2) rotate(20deg);
+                opacity: 0
+            }
+        }
+
+        /* center card */
+        .card {
+            position: relative;
+            z-index: 2;
+            width: min(760px, 92vw);
+            max-width: 900px;
+            height: min(760px, 88vh);
+            border-radius: 20px;
+            padding: 28px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 18px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.7));
+            box-shadow: 0 10px 30px rgba(15, 15, 15, 0.12);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .left {
+            padding: 18px
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 6px 0 10px
+        }
+
+        .subtitle {
+            color: #7b6c7a;
+            margin-bottom: 14px
+        }
+
+        /* Heart button */
+        \  .big-heart {
+            width: 220px;
+            height: 220px;
+            margin: 14px 0;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .45s cubic-bezier(.22, .9, .36, 1), box-shadow .35s;
+            border-radius: 50%;
+            box-shadow: 0 18px 40px rgba(255, 59, 107, 0.18);
+            background: radial-gradient(circle at 30% 25%, #fff6f8 0%, rgba(255, 255, 255, 0) 40%), linear-gradient(180deg, #ff6b91, #ff3b6b);
+        }
+
+        .big-heart:hover {
+            transform: scale(1.06)
+        }
+
+        /* small description box */
+        .desc {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #4b3b47
+        }
+
+        /* right column */
+        .right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px
+        }
+
+        .panel {
+            width: 100%;
+            border-radius: 16px;
+            padding: 18px;
+            background: var(--glass);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06)
+        }
+
+        .message-box {
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 20px;
+            padding: 8px
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 0;
+            background: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08)
+        }
+
+        /* modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 6, 12, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 6
+        }
+
+        .modal.open {
+            display: flex
+        }
+
+        .modal-card {
+            width: min(760px, 94vw);
+            background: #fff;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45)
+        }
+
+        .typewriter {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #2b2b2b;
+            min-height: 76px
+        }
+
+        .confetti-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none
+        }
+
+        /* small responsive tweaks */
+        @media (max-width:880px) {
+            .card {
+                grid-template-columns: 1fr;
+                height: auto
+            }
+
+            .big-heart {
+                width: 160px;
+                height: 160px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hearts" aria-hidden="true"></div>
+
+    <main class="card" role="main">
+        <section class="left">
+            <div class="title">I MAKE SOMETHINNG SPECIAL FOR SPECIAL PERSON IN MY LIFE </div>
+            <div class="subtitle">Click the heart to reveal a surprise .
+            </div>
+
+            <div class="big-heart" id="bigHeart" title="Click to surprise">
+                <!-- Heart SVG -->
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                        d="M12 20s-6.716-4.694-9.002-7.01C-0.515 8.86 3.91 3 8.4 5.2c1.98.9 2.9 3.2 3.6 4.4.7-1.2 1.62-3.5 3.6-4.4C20.09 3 24.516 8.86 21.002 12.99 18.716 15.306 12 20 12 20z"
+                        fill="#fff" opacity="0.12" />
+                    <path
+                        d="M12 21s-6.7-4.7-9-7C-0.6 9 3.9 3 8.4 5.2c1.98.9 2.9 3.2 3.6 4.4C12.68 8.4 13.6 6.1 15.6 5.2 20.1 3 24.5 9 21 14c-2.3 2.3-9 7-9 7z"
+                        fill="#ff2e6f" />
+                </svg>
+            </div>
+
+            <p class="desc">"Tumhe pta hai tumhare aane ke phle mai ek bs ek trh se emotionaless person thaa mai 1st tym jb tumhe vision class me dekha then i realise ki duniya me emotion pyar insb nam ki chijje v exist krti hai or firr bhut muskil, mannat krne ke finally i got u so i feel i am lucky person for having u or because of u anything u sayy 😘🤦‍♂️.".</p>
+
+            <div class="controls">
+                <button class="btn" id="openEditor">Customize message</button>
+                <button class="btn" id="surpriseBtn">Surprise them</button>
+            </div>
+        </section>
+
+        <aside class="right">
+            <div class="panel">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                    <div
+                        style="width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff8);display:flex;align-items:center;justify-content:center;font-weight:700">
+                        💌</div>
+                    <div>
+                        <div style="font-weight:700">Sweet message</div>
+                        <div style="font-size:13px;color:#6b5566"><img src="har.jpg" alt="image" style="width:150px;height:250px;border-radius:8px;object-fit:cover;">
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="message-box" id="preview">HAPPY BIRTHAY MY WIFE 🎂🍰 AND I MISS YOU VERY MUCH 🥹🫂</div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+                    <small style="color:#7a6b75">ONCE AGAIN,
+                         HAPPY BIRTHDAY BABU</small>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn" id="copyBtn">Copy text</button>
+                        <button class="btn" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Confetti canvas -->
+    <canvas class="confetti-canvas" id="confettiCanvas" width="600" height="400"></canvas>
+
+    <!-- modal editor -->
+    <div class="modal" id="editorModal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-card">
+            <h3 style="margin:0 0 8px">Edit your message</h3>
+            <p style="margin:0 0 12px;color:#66545a">Write something short, sincere and confident. Example: "I love how
+</p>
+
+            <textarea id="messageInput"
+                style="width:100%;height:120px;border-radius:10px;padding:10px;border:1px solid #eee;font-size:16px">Hey — I think you brighten my days. Want to grab coffee? ☕</textarea>
+
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+                <button class="btn" id="closeEditor">Cancel</button>
+                <button class="btn" id="saveMessage">Save & close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // -- utility: create floating hearts randomly --
+        const heartsContainer = document.querySelector('.hearts');
+        function spawnHearts(n = 18) {
+            heartsContainer.innerHTML = '';
+            for (let i = 0; i < n; i++) {
+                const el = document.createElement('div'); el.className = 'heart';
+                el.style.left = (Math.random() * 100) + '%';
+                el.style.top = (100 + Math.random() * 20) + '%';
+                el.style.opacity = (0.4 + Math.random() * 0.6).toFixed(2);
+                el.style.animationDuration = (6 + Math.random() * 8) + 's';
+                el.style.transform = 'translateY(0)';
+                el.innerHTML = `\n          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-6.7-4.7-9-7C-0.6 9 3.9 3 8.4 5.2c1.98.9 2.9 3.2 3.6 4.4C12.68 8.4 13.6 6.1 15.6 5.2 20.1 3 24.5 9 21 14c-2.3 2.3-9 7-9 7z" fill="rgba(255,50,100,0.95)"/></svg>`;
+                heartsContainer.appendChild(el);
+            }
+        }
+        spawnHearts(20);
+
+        // -- message handling --
+        const preview = document.getElementById('preview');
+        const messageInput = document.getElementById('messageInput');
+        const openEditor = document.getElementById('openEditor');
+        const editorModal = document.getElementById('editorModal');
+        const closeEditor = document.getElementById('closeEditor');
+        const saveMessage = document.getElementById('saveMessage');
+        const copyBtn = document.getElementById('copyBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const surpriseBtn = document.getElementById('surpriseBtn');
+        const bigHeart = document.getElementById('bigHeart');
+
+        openEditor.addEventListener('click', () => { editorModal.classList.add('open'); editorModal.setAttribute('aria-hidden', 'false'); messageInput.focus(); });
+        closeEditor.addEventListener('click', () => { editorModal.classList.remove('open'); editorModal.setAttribute('aria-hidden', 'true'); });
+        saveMessage.addEventListener('click', () => { preview.textContent = messageInput.value || '...'; editorModal.classList.remove('open'); editorModal.setAttribute('aria-hidden', 'true'); });
+
+        copyBtn.addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(preview.textContent); copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy text', 1200); } catch (e) { copyBtn.textContent = 'Copy'; }
+        });
+
+        resetBtn.addEventListener('click', () => { const d = 'Hey — I think you brighten my days. Want to grab coffee? ☕'; preview.textContent = d; messageInput.value = d; });
+
+        // -- typewriter effect inside modal when surprising --
+        function typewriter(node, text, speed = 36) {
+            node.textContent = '';
+            let i = 0; const id = setInterval(() => {
+                node.textContent += text.charAt(i++);
+                if (i > text.length) { clearInterval(id); }
+            }, speed);
+        }
+
+        // -- confetti simple particle system --
+        const confettiCanvas = document.getElementById('confettiCanvas');
+        const ctx = confettiCanvas.getContext('2d');
+        let confettiPieces = [];
+        function resizeCanvas() { confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+        addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        function spawnConfetti(count = 80) {
+            confettiPieces = [];
+            for (let i = 0; i < count; i++) {
+                confettiPieces.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height / 4,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: Math.random() * 3 + 2,
+                    size: 6 + Math.random() * 8,
+                    rot: Math.random() * 360,
+                    vr: (Math.random() - 0.5) * 12,
+                    color: `hsl(${Math.floor(Math.random() * 60) + 330}, 85%, 60%)`
+                });
+            }
+            requestAnimationFrame(updateConfetti);
+        }
+        function updateConfetti() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            for (const p of confettiPieces) {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.rot += p.vr;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                ctx.restore();
+            }
+            confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 60);
+            if (confettiPieces.length) requestAnimationFrame(updateConfetti);
+        }
+
+        // -- modal reveal flow when surprising --
+        surpriseBtn.addEventListener('click', () => triggerSurprise());
+        bigHeart.addEventListener('click', () => triggerSurprise());
+
+        function triggerSurprise() {
+            // play pulse animation
+            bigHeart.animate([
+                { transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }
+            ], { duration: 700, easing: 'cubic-bezier(.22,.9,.36,1)' });
+
+            // spawn confetti
+            spawnConfetti(120);
+
+            // quick floating hearts burst
+            spawnHearts(28);
+
+            // open modal with typewriter message
+            const modal = document.getElementById('editorModal');
+            modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
+            const typeNode = document.createElement('div'); typeNode.className = 'typewriter';
+            const card = modal.querySelector('.modal-card');
+            // replace the textarea visually with typewriter message
+            const oldArea = modal.querySelector('textarea'); oldArea.style.display = 'none';
+            if (card.querySelector('.typewriter')) card.querySelector('.typewriter').remove();
+            card.insertBefore(typeNode, card.querySelector('div'));
+            typewriter(typeNode, preview.textContent, 28);
+
+            // auto-close modal after a time (so the surprise shows then closes)
+            setTimeout(() => {
+                if (modal.classList.contains('open')) {
+                    // restore textarea
+                    oldArea.style.display = 'block';
+                    modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true');
+                }
+            }, 4200);
+        }
+
+        // initial populate
+        messageInput.addEventListener('input', () => document.getElementById('preview').textContent = messageInput.value);
+
+        // Accessibility: close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('editorModal').classList.remove('open');
+            }
+        });
+
+        // small touch: clicking outside modal closes
+        document.getElementById('editorModal').addEventListener('click', (ev) => { if (ev.target === ev.currentTarget) { ev.currentTarget.classList.remove('open'); } });
+
+        // friendly hint: if clipboard isn't available, fallback
+        if (!navigator.clipboard) copyBtn.title = 'Clipboard not available in this browser';
+
+        // small confetti demo on load
+        setTimeout(() => spawnConfetti(40), 800);
+    </script>
+</body>
+
+</html>
